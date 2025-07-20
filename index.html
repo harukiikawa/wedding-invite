@@ -2,9 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>結婚式 出欠確認</title>
+  <title>青輝と琴梨の結婚式 出欠確認</title>
 </head>
 <body>
+  <img src=" alt="結婚式の写真" style="max-width: 100%; height: auto;">
   <h2>ご出欠確認フォーム</h2>
   <form id="wedding-form">
     お名前: <input type="text" name="name" required><br><br>
@@ -23,21 +24,42 @@
     const form = document.getElementById('wedding-form');
     form.addEventListener('submit', async e => {
       e.preventDefault();
+
+      // 送信してもいいか確認
+      const ok = confirm('送信してもよろしいですか？');
+      if (!ok) {
+        // キャンセルされたら送信処理中断
+        return;
+      }
+
       const formData = new FormData(form);
       const data = {};
       formData.forEach((value, key) => data[key] = value);
 
-      await fetch('https://script.google.com/macros/s/AKfycbyveA4PzcX_Y8Qtta_ho43tqhW2Fsaknq1r-cLQ6L_mHKxfEcjB--IwXTRz5AhkAeuO/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyveA4PzcX_Y8Qtta_ho43tqhW2Fsaknq1r-cLQ6L_mHKxfEcjB--IwXTRz5AhkAeuO/exec', {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
 
-      alert('送信が完了しました。ありがとうございます！');
-      form.reset();
+        if (!response.ok) throw new Error('送信に失敗しました');
+
+        const resJson = await response.json();
+
+        if (resJson.status === "success") {
+          alert('送信が完了しました。ありがとうございます！');
+          form.reset();
+        } else {
+          alert('送信に問題がありました。');
+        }
+      } catch (error) {
+        alert('送信中にエラーが発生しました。もう一度お試しください。');
+        console.error(error);
+      }
     });
   </script>
 </body>
