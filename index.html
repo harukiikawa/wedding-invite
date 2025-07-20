@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>結婚式 出欠確認</title>
+</head>
+<body>
+  <h2>ご出欠確認フォーム</h2>
+  <form id="wedding-form">
+    お名前: <input type="text" name="name" required><br><br>
+    ご出欠: 
+    <select name="attendance">
+      <option value="出席">出席</option>
+      <option value="欠席">欠席</option>
+    </select><br><br>
+    同伴者数: <input type="number" name="guests" min="0"><br><br>
+    アレルギー: <input type="text" name="allergy"><br><br>
+    メッセージ: <textarea name="message"></textarea><br><br>
+    <button type="submit">送信</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('wedding-form');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      await fetch('https://script.google.com/macros/s/AKfycbyveA4PzcX_Y8Qtta_ho43tqhW2Fsaknq1r-cLQ6L_mHKxfEcjB--IwXTRz5AhkAeuO/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      alert('送信が完了しました。ありがとうございます！');
+      form.reset();
+    });
+  </script>
+</body>
+</html>
